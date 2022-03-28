@@ -197,16 +197,18 @@ class Container implements ArrayAccess, IteratorAggregate, Countable
     public function bindTo($abstract, $concrete = null)
     {
         if (is_array($abstract)) {
-            $this->bind = array_merge($this->bind, $abstract);
+            foreach ($abstract as $key => $val) {
+                $this->bindTo($key, $val);
+            }
         } elseif ($concrete instanceof Closure) {
             $this->bind[$abstract] = $concrete;
         } elseif (is_object($concrete)) {
-            if (isset($this->bind[$abstract])) {
-                $abstract = $this->bind[$abstract];
-            }
-            $this->instances[$abstract] = $concrete;
+            $this->instance($abstract, $concrete);
         } else {
-            $this->bind[$abstract] = $concrete;
+            $abstract = $this->getAlias($abstract);
+            if ($abstract != $concrete) {
+                $this->bind[$abstract] = $concrete;
+            }
         }
 
         return $this;
