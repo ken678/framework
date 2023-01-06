@@ -146,7 +146,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     public function intersect($items, $indexKey = null)
     {
         if ($this->isEmpty() || is_scalar($this->items[0])) {
-            return new static(array_diff($this->items, $this->convertToArray($items)));
+            return new static(array_intersect($this->items, $this->convertToArray($items)));
         }
 
         $intersect  = [];
@@ -167,21 +167,11 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      * 返回数组中所有的键名
      *
      * @access public
-     * @return array
+     * @return static
      */
     public function keys()
     {
-        $current = current($this->items);
-
-        if (is_scalar($current)) {
-            $array = $this->items;
-        } elseif (is_array($current)) {
-            $array = $current;
-        } else {
-            $array = $current->toArray();
-        }
-
-        return array_keys($array);
+        return new static(array_keys($this->items));
     }
 
     /**
@@ -244,6 +234,8 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
         } else {
             $this->items[$key] = $value;
         }
+
+        return $this;
     }
 
     /**
@@ -346,11 +338,11 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
         return $this->filter(function ($data) use ($field, $operator, $value) {
             if (strpos($field, '.')) {
-                list($field, $relation) = explode('.', $field);
+                [$field, $relation] = explode('.', $field);
 
-                $result = isset($data[$field][$relation]) ? $data[$field][$relation] : null;
+                $result = $data[$field][$relation] ?? null;
             } else {
-                $result = isset($data[$field]) ? $data[$field] : null;
+                $result = $data[$field] ?? null;
             }
 
             switch (strtolower($operator)) {
@@ -378,10 +370,10 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
                 case 'not in':
                     return is_scalar($result) && !in_array($result, $value, true);
                 case 'between':
-                    list($min, $max) = is_string($value) ? explode(',', $value) : $value;
+                    [$min, $max] = is_string($value) ? explode(',', $value) : $value;
                     return is_scalar($result) && $result >= $min && $result <= $max;
                 case 'not between':
-                    list($min, $max) = is_string($value) ? explode(',', $value) : $value;
+                    [$min, $max] = is_string($value) ? explode(',', $value) : $value;
                     return is_scalar($result) && $result > $max || $result < $min;
                 case '==':
                 case '=':
@@ -435,11 +427,11 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     public function order($field, $order = null, $intSort = true)
     {
         return $this->sort(function ($a, $b) use ($field, $order, $intSort) {
-            $fieldA = isset($a[$field]) ? $a[$field] : null;
-            $fieldB = isset($b[$field]) ? $b[$field] : null;
+            $fieldA = $a[$field] ?? null;
+            $fieldB = $b[$field] ?? null;
 
             if ($intSort) {
-                return 'desc' == strtolower($order) ? $fieldB >= $fieldA : $fieldA >= $fieldB;
+                return 'desc' == strtolower($order) ? intval($fieldB > $fieldA) : intval($fieldA > $fieldB);
             } else {
                 return 'desc' == strtolower($order) ? strcmp($fieldB, $fieldA) : strcmp($fieldA, $fieldB);
             }
