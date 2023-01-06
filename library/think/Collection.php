@@ -40,12 +40,12 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      * @access public
      * @return bool
      */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return empty($this->items);
     }
 
-    public function toArray()
+    public function toArray(): array
     {
         return array_map(function ($value) {
             return ($value instanceof Model || $value instanceof self) ? $value->toArray() : $value;
@@ -224,10 +224,10 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      * 在数组结尾插入一个元素
      * @access public
      * @param  mixed  $value
-     * @param  mixed  $key
-     * @return void
+     * @param  string $key   KEY
+     * @return $this
      */
-    public function push($value, $key = null)
+    public function push($value, string $key = null)
     {
         if (is_null($key)) {
             $this->items[] = $value;
@@ -261,16 +261,18 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      * 在数组开头插入一个元素
      * @access public
      * @param mixed  $value
-     * @param mixed  $key
-     * @return void
+     * @param string $key   KEY
+     * @return $this
      */
-    public function unshift($value, $key = null)
+    public function unshift($value, string $key = null)
     {
         if (is_null($key)) {
             array_unshift($this->items, $value);
         } else {
             $this->items = [$key => $value] + $this->items;
         }
+
+        return $this;
     }
 
     /**
@@ -468,7 +470,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     }
 
     // ArrayAccess
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return array_key_exists($offset, $this->items);
     }
@@ -493,7 +495,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     }
 
     //Countable
-    public function count()
+    public function count(): int
     {
         return count($this->items);
     }
@@ -516,7 +518,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      * @param  integer $options json参数
      * @return string
      */
-    public function toJson($options = JSON_UNESCAPED_UNICODE)
+    public function toJson($options = JSON_UNESCAPED_UNICODE): string
     {
         return json_encode($this->toArray(), $options);
     }
@@ -533,7 +535,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      * @param  mixed $items
      * @return array
      */
-    protected function convertToArray($items)
+    protected function convertToArray($items): array
     {
         if ($items instanceof self) {
             return $items->all();
