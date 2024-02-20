@@ -178,39 +178,6 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     /**
      * 绑定一个类、闭包、实例、接口实现到容器
      * @access public
-     * @param  string  $abstract    类标识、接口
-     * @param  mixed   $concrete    要绑定的类、闭包或者实例
-     * @return Container
-     */
-    public static function set($abstract, $concrete = null)
-    {
-        return static::getInstance()->bindTo($abstract, $concrete);
-    }
-
-    /**
-     * 移除容器中的对象实例
-     * @access public
-     * @param  string  $abstract    类标识、接口
-     * @return void
-     */
-    public static function remove($abstract)
-    {
-        return static::getInstance()->delete($abstract);
-    }
-
-    /**
-     * 清除容器中的对象实例
-     * @access public
-     * @return void
-     */
-    public static function clear()
-    {
-        return static::getInstance()->flush();
-    }
-
-    /**
-     * 绑定一个类、闭包、实例、接口实现到容器
-     * @access public
      * @param  string|array  $abstract    类标识、接口
      * @param  mixed         $concrete    要绑定的类、闭包或者实例
      * @return $this
@@ -356,17 +323,6 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     public function all()
     {
         return $this->instances;
-    }
-
-    /**
-     * 清除容器中的对象实例
-     * @access public
-     * @return void
-     */
-    public function flush()
-    {
-        $this->instances = [];
-        $this->bind      = [];
     }
 
     /**
