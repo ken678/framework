@@ -1,6 +1,6 @@
 ![](https://box.kancloud.cn/5a0aaa69a5ff42657b5c4715f3d49221) 
 
-ThinkPHP 5.1（LTS） —— 12载初心，你值得信赖的PHP框架
+ThinkPHP 5.1（YznCMS 团队长期维护）
 ===============
 
 [![Total Downloads](http://poser.pugx.org/yzncms/framework/downloads)](https://packagist.org/packages/yzncms/framework)
