@@ -281,9 +281,20 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     }
 
     /**
+     * 判断容器中是否存在类及标识
+     * @access public
+     * @param string $name 类名或者标识
+     * @return bool
+     */
+    public function has(string $name): bool
+    {
+        return $this->bound($name);
+    }
+
+    /**
      * 判断容器中是否存在对象实例
      * @access public
-     * @param  string    $abstract    类名或者标识
+     * @param string $abstract 类名或者标识
      * @return bool
      */
     public function exists(string $abstract): bool
@@ -291,17 +302,6 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
         $abstract = $this->getAlias($abstract);
 
         return isset($this->instances[$abstract]);
-    }
-
-    /**
-     * 判断容器中是否存在类及标识
-     * @access public
-     * @param  string    $name    类名或者标识
-     * @return bool
-     */
-    public function has($name): bool
-    {
-        return $this->bound($name);
     }
 
     /**
