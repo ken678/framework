@@ -17,10 +17,13 @@ use Closure;
 use Countable;
 use InvalidArgumentException;
 use IteratorAggregate;
+use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
+use ReflectionFunctionAbstract;
 use ReflectionMethod;
+use ReflectionNamedType;
 use think\exception\ClassNotFoundException;
 use think\exception\FuncNotFoundException;
 use Traversable;
@@ -47,7 +50,7 @@ use Traversable;
  * @property route\RuleName $rule_name
  * @property Log            $log
  */
-class Container implements ArrayAccess, IteratorAggregate, Countable
+class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, Countable
 {
     /**
      * 容器对象实例
@@ -106,9 +109,11 @@ class Container implements ArrayAccess, IteratorAggregate, Countable
         if (is_null(static::$instance)) {
             static::$instance = new static;
         }
+
         if (static::$instance instanceof Closure) {
             return (static::$instance)();
         }
+
         return static::$instance;
     }
 
@@ -118,7 +123,7 @@ class Container implements ArrayAccess, IteratorAggregate, Countable
      * @param  object        $instance
      * @return void
      */
-    public static function setInstance($instance)
+    public static function setInstance($instance): void
     {
         static::$instance = $instance;
     }
@@ -507,7 +512,7 @@ class Container implements ArrayAccess, IteratorAggregate, Countable
      * @param  array                                 $vars    参数
      * @return array
      */
-    protected function bindParams($reflect, $vars = [])
+    protected function bindParams(ReflectionFunctionAbstract $reflect, array $vars = []): array
     {
         if ($reflect->getNumberOfParameters() == 0) {
             return [];
@@ -526,7 +531,7 @@ class Container implements ArrayAccess, IteratorAggregate, Countable
 
             if ($param->isVariadic()) {
                 return array_merge($args, array_values($vars));
-            } elseif ($reflectionType && $reflectionType instanceof \ReflectionNamedType && $reflectionType->isBuiltin() === false) {
+            } elseif ($reflectionType && $reflectionType instanceof ReflectionNamedType && $reflectionType->isBuiltin() === false) {
                 $args[] = $this->getObjectParam($reflectionType->getName(), $vars);
             } elseif (1 == $type && !empty($vars)) {
                 $args[] = array_shift($vars);
