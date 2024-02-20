@@ -60,7 +60,7 @@ class Controller
      */
     public function __construct(App $app = null)
     {
-        $this->app     = $app ?: Container::get('app');
+        $this->app     = $app ?: Container::pull('app');
         $this->request = $this->app['request'];
         $this->view    = $this->app['view'];
 
