@@ -372,11 +372,11 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     /**
      * 执行函数或者闭包方法 支持参数调用
      * @access public
-     * @param  mixed  $function 函数或者闭包
-     * @param  array  $vars     参数
+     * @param string|Closure $function 函数或者闭包
+     * @param array          $vars     参数
      * @return mixed
      */
-    public function invokeFunction($function, $vars = [])
+    public function invokeFunction(string|Closure $function, array $vars = [])
     {
         try {
             $reflect = new ReflectionFunction($function);
