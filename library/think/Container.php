@@ -182,11 +182,11 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
      * @param mixed        $concrete 要绑定的类、闭包或者实例
      * @return $this
      */
-    public function bindTo($abstract, $concrete = null)
+    public function bind($abstract, $concrete = null)
     {
         if (is_array($abstract)) {
             foreach ($abstract as $key => $val) {
-                $this->bindTo($key, $val);
+                $this->bind($key, $val);
             }
         } elseif ($concrete instanceof Closure) {
             $this->bind[$abstract] = $concrete;
@@ -556,7 +556,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
 
     public function __set($name, $value)
     {
-        $this->bindTo($name, $value);
+        $this->bind($name, $value);
     }
 
     public function __get($name)
@@ -589,7 +589,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     #[\ReturnTypeWillChange]
     public function offsetSet($key, $value)
     {
-        $this->bindTo($key, $value);
+        $this->bind($key, $value);
     }
 
     #[\ReturnTypeWillChange]
@@ -608,13 +608,5 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     public function getIterator(): Traversable
     {
         return new ArrayIterator($this->instances);
-    }
-
-    public function __debugInfo()
-    {
-        $data = get_object_vars($this);
-        unset($data['instances'], $data['instance']);
-
-        return $data;
     }
 }
