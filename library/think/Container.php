@@ -135,7 +135,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
      * @param Closure|null   $callback
      * @return void
      */
-    public function resolving($abstract, Closure $callback = null)
+    public function resolving(string|Closure $abstract, Closure $callback = null): void
     {
         if ($abstract instanceof Closure) {
             $this->invokeCallback['*'][] = $abstract;
@@ -148,16 +148,31 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     }
 
     /**
-     * 获取容器中的对象实例
-     * @access public
-     * @param  string        $abstract       类名或者标识
-     * @param  array|true    $vars           变量
-     * @param  bool          $newInstance    是否每次创建新的实例
-     * @return object
+     * 获取容器中的对象实例 不存在则创建
+     * @template T
+     * @param string|class-string<T> $abstract    类名或者标识
+     * @param array                  $vars        变量
+     * @param bool                   $newInstance 是否每次创建新的实例
+     * @return T|object
      */
-    public static function get($abstract, $vars = [], $newInstance = false)
+    public static function pull(string $abstract, array $vars = [], bool $newInstance = false)
     {
         return static::getInstance()->make($abstract, $vars, $newInstance);
+    }
+
+    /**
+     * 获取容器中的对象实例
+     * @template T
+     * @param string|class-string<T> $abstract 类名或者标识
+     * @return T|object
+     */
+    public function get(string $abstract)
+    {
+        if ($this->has($abstract)) {
+            return $this->make($abstract);
+        }
+
+        throw new ClassNotFoundException('class not exists: ' . $abstract, $abstract);
     }
 
     /**
