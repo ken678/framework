@@ -25,6 +25,7 @@ use ReflectionFunctionAbstract;
 use ReflectionMethod;
 use think\exception\ClassNotFoundException;
 use think\exception\FuncNotFoundException;
+use think\helper\Str;
 use Traversable;
 
 /**
@@ -460,8 +461,8 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     /**
      * 调用反射执行类的实例化 支持依赖注入
      * @access public
-     * @param  string    $class 类名
-     * @param  array     $vars  参数
+     * @param string $class 类名
+     * @param array  $vars  参数
      * @return mixed
      */
     public function invokeClass(string $class, array $vars = [])
@@ -500,7 +501,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
      * @param object $object 容器对象实例
      * @return void
      */
-    protected function invokeAfter(string $class, $object)
+    protected function invokeAfter(string $class, $object): void
     {
         if (isset($this->invokeCallback['*'])) {
             foreach ($this->invokeCallback['*'] as $callback) {
@@ -518,8 +519,8 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     /**
      * 绑定参数
      * @access protected
-     * @param  \ReflectionMethod|\ReflectionFunction $reflect 反射类
-     * @param  array                                 $vars    参数
+     * @param ReflectionFunctionAbstract $reflect 反射类
+     * @param array                      $vars    参数
      * @return array
      */
     protected function bindParams(ReflectionFunctionAbstract $reflect, array $vars = []): array
@@ -536,7 +537,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
 
         foreach ($params as $param) {
             $name           = $param->getName();
-            $lowerName      = Loader::parseName($name);
+            $lowerName      = Str::snake($name);
             $reflectionType = $param->getType();
 
             if ($param->isVariadic()) {
@@ -560,13 +561,29 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     }
 
     /**
+     * 创建工厂对象实例
+     * @param string $name      工厂类名
+     * @param string $namespace 默认命名空间
+     * @param array  $args
+     * @return mixed
+     * @deprecated
+     * @access public
+     */
+    public static function factory(string $name, string $namespace = '', ...$args)
+    {
+        $class = false !== strpos($name, '\\') ? $name : $namespace . ucwords($name);
+
+        return Container::getInstance()->invokeClass($class, $args);
+    }
+
+    /**
      * 获取对象类型的参数值
      * @access protected
-     * @param  string   $className  类名
-     * @param  array    $vars       参数
+     * @param string $className 类名
+     * @param array  $vars      参数
      * @return mixed
      */
-    protected function getObjectParam($className, &$vars)
+    protected function getObjectParam(string $className, array &$vars)
     {
         $array = $vars;
         $value = array_shift($array);
@@ -588,12 +605,12 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
 
     public function __get($name)
     {
-        return $this->make($name);
+        return $this->get($name);
     }
 
-    public function __isset($name)
+    public function __isset($name): bool
     {
-        return $this->bound($name);
+        return $this->exists($name);
     }
 
     public function __unset($name)
@@ -604,25 +621,25 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     #[\ReturnTypeWillChange]
     public function offsetExists($key): bool
     {
-        return $this->__isset($key);
+        return $this->exists($key);
     }
 
     #[\ReturnTypeWillChange]
     public function offsetGet($key)
     {
-        return $this->__get($key);
+        return $this->get($key);
     }
 
     #[\ReturnTypeWillChange]
     public function offsetSet($key, $value)
     {
-        $this->__set($key, $value);
+        $this->bindTo($key, $value);
     }
 
     #[\ReturnTypeWillChange]
     public function offsetUnset($key)
     {
-        $this->__unset($key);
+        $this->delete($key);
     }
 
     //Countable
