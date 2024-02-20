@@ -305,21 +305,17 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     }
 
     /**
-     * 创建类的实例
-     * @access public
-     * @param  string        $abstract       类名或者标识
-     * @param  array|true    $vars           变量
-     * @param  bool          $newInstance    是否每次创建新的实例
-     * @return object
+     * 创建类的实例 已经存在则直接获取
+     * @template T
+     * @param string|class-string<T> $abstract    类名或者标识
+     * @param array                  $vars        变量
+     * @param bool                   $newInstance 是否每次创建新的实例
+     * @return T|object
      */
-    public function make($abstract, $vars = [], $newInstance = false)
+    public function make(string $abstract, array $vars = [], bool $newInstance = false)
     {
         $abstract = $this->getAlias($abstract);
-        if (true === $vars) {
-            // 总是创建新的实例化对象
-            $newInstance = true;
-            $vars        = [];
-        }
+
         if (isset($this->instances[$abstract]) && !$newInstance) {
             return $this->instances[$abstract];
         }
