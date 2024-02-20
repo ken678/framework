@@ -307,7 +307,7 @@ class App extends Container
             if (is_file($path . 'provider.php')) {
                 $provider = include $path . 'provider.php';
                 if (is_array($provider)) {
-                    $this->bind($provider);
+                    $this->bindTo($provider);
                 }
             }
 
