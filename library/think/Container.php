@@ -272,7 +272,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     /**
      * 判断容器中是否存在类及标识
      * @access public
-     * @param  string    $abstract    类名或者标识
+     * @param string $abstract 类名或者标识
      * @return bool
      */
     public function bound(string $abstract): bool
