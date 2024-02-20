@@ -254,13 +254,13 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     }
 
     /**
-     * 绑定一个类实例当容器
+     * 绑定一个类实例到容器
      * @access public
-     * @param  string           $abstract    类名或者标识
-     * @param  object|\Closure  $instance    类的实例
+     * @param string $abstract 类名或者标识
+     * @param object $instance 类的实例
      * @return $this
      */
-    public function instance($abstract, $instance)
+    public function instance(string $abstract, $instance)
     {
         $abstract = $this->getAlias($abstract);
 
