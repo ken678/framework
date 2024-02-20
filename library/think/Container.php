@@ -627,7 +627,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     #[\ReturnTypeWillChange]
     public function offsetGet($key)
     {
-        return $this->get($key);
+        return $this->make($key);
     }
 
     #[\ReturnTypeWillChange]
