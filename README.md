@@ -25,16 +25,7 @@ ThinkPHP5.1对底层架构做了进一步的改进，减少依赖，其主要特
  + 中间件支持（`V5.1.6+`）
  + 支持`Swoole`/`Workerman`运行（`V5.1.18+`）
 
-官方已经正式宣布`5.1.27`版本为LTS版本。
-
-### 废除的功能：
-
- + 聚合模型
- + 内置控制器扩展类
- + 模型自动验证
-
-> ThinkPHP5.1的运行环境要求PHP5.6+ 兼容PHP8.0。
-
+> ThinkPHP5.1的运行环境要求PHP7.0+ 兼容PHP8.2。
 
 ## 安装
 
@@ -68,19 +59,9 @@ composer update topthink/framework
 + [完全开发手册](https://www.kancloud.cn/manual/thinkphp5_1/content)
 + [升级指导](https://www.kancloud.cn/manual/thinkphp5_1/354155) 
 
-
-## 官方服务
-
-+ [应用服务市场](https://market.topthink.com/)
-+ [ThinkAPI——统一API服务](https://docs.topthink.com/think-api) 
-
 ## 命名规范
 
 `ThinkPHP5.1`遵循PSR-2命名规范和PSR-4自动加载规范。
-
-## 参与开发
-
-请参阅 [ThinkPHP5 核心框架包](https://github.com/top-think/framework)。
 
 ## 版权信息
 
