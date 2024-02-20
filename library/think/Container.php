@@ -339,7 +339,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
      * @param string $name 类名或者标识
      * @return void
      */
-    public function delete($name)
+    public function delete(string $name)
     {
         $name = $this->getAlias($name);
 
