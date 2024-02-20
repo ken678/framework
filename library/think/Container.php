@@ -23,7 +23,6 @@ use ReflectionException;
 use ReflectionFunction;
 use ReflectionFunctionAbstract;
 use ReflectionMethod;
-use ReflectionNamedType;
 use think\exception\ClassNotFoundException;
 use think\exception\FuncNotFoundException;
 use Traversable;
@@ -54,7 +53,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
 {
     /**
      * 容器对象实例
-     * @var Container
+     * @var Container|Closure
      */
     protected static $instance;
 
@@ -120,7 +119,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     /**
      * 设置当前容器的实例
      * @access public
-     * @param  object        $instance
+     * @param object|Closure $instance
      * @return void
      */
     public static function setInstance($instance): void
@@ -135,7 +134,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
      * @param Closure|null   $callback
      * @return void
      */
-    public function resolving(string|Closure $abstract, Closure $callback = null): void
+    public function resolving($abstract, Closure $callback = null): void
     {
         if ($abstract instanceof Closure) {
             $this->invokeCallback['*'][] = $abstract;
@@ -166,7 +165,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
      * @param string|class-string<T> $abstract 类名或者标识
      * @return T|object
      */
-    public function get(string $abstract)
+    public function get($abstract)
     {
         if ($this->has($abstract)) {
             return $this->make($abstract);
@@ -286,7 +285,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
      * @param string $name 类名或者标识
      * @return bool
      */
-    public function has(string $name): bool
+    public function has($name): bool
     {
         return $this->bound($name);
     }
@@ -339,7 +338,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
      * @param string $name 类名或者标识
      * @return void
      */
-    public function delete(string $name)
+    public function delete($name)
     {
         $name = $this->getAlias($name);
 
@@ -376,7 +375,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
      * @param array          $vars     参数
      * @return mixed
      */
-    public function invokeFunction(string|Closure $function, array $vars = [])
+    public function invokeFunction($function, array $vars = [])
     {
         try {
             $reflect = new ReflectionFunction($function);
@@ -411,7 +410,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
         try {
             $reflect = new ReflectionMethod($class, $method);
         } catch (ReflectionException $e) {
-            $class = is_object($class) ? $class::class : $class;
+            $class = is_object($class) ? get_class($class) : $class;
             throw new FuncNotFoundException('method not exists: ' . $class . '::' . $method . '()', "{$class}::{$method}", $e);
         }
 
@@ -427,9 +426,9 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     /**
      * 调用反射执行类的方法 支持参数绑定
      * @access public
-     * @param  object  $instance 对象实例
-     * @param  mixed   $reflect 反射类
-     * @param  array   $vars   参数
+     * @param object $instance 对象实例
+     * @param mixed  $reflect  反射类
+     * @param array  $vars     参数
      * @return mixed
      */
     public function invokeReflectMethod($instance, $reflect, array $vars = [])
@@ -442,8 +441,8 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     /**
      * 调用反射执行callable 支持参数绑定
      * @access public
-     * @param  mixed $callable
-     * @param  array $vars   参数
+     * @param mixed $callable
+     * @param array $vars       参数
      * @param bool  $accessible 设置是否可访问
      * @return mixed
      */
@@ -542,7 +541,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
 
             if ($param->isVariadic()) {
                 return array_merge($args, array_values($vars));
-            } elseif ($reflectionType && $reflectionType instanceof ReflectionNamedType && $reflectionType->isBuiltin() === false) {
+            } elseif ($reflectionType && $reflectionType instanceof \ReflectionNamedType && $reflectionType->isBuiltin() === false) {
                 $args[] = $this->getObjectParam($reflectionType->getName(), $vars);
             } elseif (1 == $type && !empty($vars)) {
                 $args[] = array_shift($vars);
