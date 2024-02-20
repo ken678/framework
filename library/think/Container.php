@@ -392,26 +392,26 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
     /**
      * 调用反射执行类的方法 支持参数绑定
      * @access public
-     * @param  mixed   $method 方法
-     * @param  array   $vars   参数
+     * @param mixed $method     方法
+     * @param array $vars       参数
      * @param bool  $accessible 设置是否可访问
      * @return mixed
      */
     public function invokeMethod($method, array $vars = [], bool $accessible = false)
     {
         if (is_array($method)) {
-            list($class, $method) = $method;
+            [$class, $method] = $method;
 
             $class = is_object($class) ? $class : $this->invokeClass($class);
         } else {
             // 静态方法
-            list($class, $method) = explode('::', $method);
+            [$class, $method] = explode('::', $method);
         }
 
         try {
             $reflect = new ReflectionMethod($class, $method);
         } catch (ReflectionException $e) {
-            $class = is_object($class) ? get_class($class) : $class;
+            $class = is_object($class) ? $class::class : $class;
             throw new FuncNotFoundException('method not exists: ' . $class . '::' . $method . '()', "{$class}::{$method}", $e);
         }
 
