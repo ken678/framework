@@ -685,7 +685,7 @@ class App extends Container
             }
         }
 
-        $this->__set($guid, $class);
+        $this->bindTo($guid, $class);
 
         return $object;
     }
